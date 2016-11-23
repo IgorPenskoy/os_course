@@ -5,5 +5,13 @@
 *.exe
 *.out
 *.o
+*.ko
+*.symvers
+*.md
+*.txt
+*.mod.c
+*.cmd
+*.order
+*.mod
 build-os_course-Desktop_Qt_5_7_0_GCC_64bit-Debug/
 
