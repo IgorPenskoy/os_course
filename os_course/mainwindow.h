@@ -27,12 +27,11 @@ public:
 
 private:
     Ui::MainWindow *ui;
-    std::vector <float> read_cpu_stats();
-    int get_cpu_load(double dt);
 
 public slots:
     void update_info();
     void update_process_table();
+    void update_journal();
     void kill_process();
 };
 

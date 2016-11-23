@@ -6,19 +6,19 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>450</width>
-    <height>350</height>
+    <width>509</width>
+    <height>352</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>Системный монитор Linux. v 0.0.1</string>
   </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QGridLayout" name="gridLayout">
     <item row="0" column="0">
      <widget class="QTabWidget" name="tabs">
       <property name="currentIndex">
-       <number>0</number>
+       <number>2</number>
       </property>
       <widget class="QWidget" name="info_tab">
        <attribute name="title">
@@ -130,6 +130,16 @@
         </item>
        </layout>
       </widget>
+      <widget class="QWidget" name="journal_exe">
+       <attribute name="title">
+        <string>Журнал запущенных программ</string>
+       </attribute>
+       <layout class="QGridLayout" name="gridLayout_4">
+        <item row="0" column="0">
+         <widget class="QTextEdit" name="journal_content"/>
+        </item>
+       </layout>
+      </widget>
      </widget>
     </item>
    </layout>
@@ -139,7 +149,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>450</width>
+     <width>509</width>
      <height>19</height>
     </rect>
    </property>
