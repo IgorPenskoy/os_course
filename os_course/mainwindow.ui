@@ -18,7 +18,7 @@
     <item row="0" column="0">
      <widget class="QTabWidget" name="tabs">
       <property name="currentIndex">
-       <number>2</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="info_tab">
        <attribute name="title">
@@ -117,7 +117,14 @@
         <item row="0" column="0">
          <layout class="QVBoxLayout" name="verticalLayout_2">
           <item>
-           <widget class="QTableWidget" name="process_table_tablewidget"/>
+           <widget class="QTableWidget" name="process_table_tablewidget">
+            <property name="selectionMode">
+             <enum>QAbstractItemView::SingleSelection</enum>
+            </property>
+            <property name="selectionBehavior">
+             <enum>QAbstractItemView::SelectRows</enum>
+            </property>
+           </widget>
           </item>
           <item>
            <widget class="QPushButton" name="kill_process_pushbutton">
@@ -150,7 +157,7 @@
      <x>0</x>
      <y>0</y>
      <width>509</width>
-     <height>19</height>
+     <height>25</height>
     </rect>
    </property>
   </widget>

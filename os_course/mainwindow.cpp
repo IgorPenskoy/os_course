@@ -119,11 +119,42 @@ QString get_available_memory() {
 }
 
 QString get_busy_memory() {
-    return QString("");
+    std::string str;
+    QString e("");
+    std::ifstream stream("/proc/meminfo");
+    stream >> str;
+    stream >> str;
+    int num = atoi(str.c_str());
+    for (int i = 0; i < 6; i++) {
+        stream >> str;
+    }
+    int free = atoi(str.c_str());
+    num -= free;
+    int gb = (num / 1024) / 1024;
+    int mb = (num - gb * 1024 * 1024) / 1024;
+    int kb = (num - (gb * 1024 * 1024 + mb * 1024));
+    if (gb > 0)
+       e = QString::number(gb) + QString(" Gb ");
+    if (mb > 0)
+       e += QString::number(mb) + QString(" Mb ");
+    if (kb > 0)
+       e += QString::number(kb) + QString(" Kb ");
+    stream.close();
+    return e;
 }
 
 int get_memory_percentage() {
-    return 0;
+    std::string str;
+    QString e("");
+    std::ifstream stream("/proc/meminfo");
+    stream >> str;
+    stream >> str;
+    int num = atoi(str.c_str());
+    for (int i = 0; i < 6; i++) {
+        stream >> str;
+    }
+    int free = atoi(str.c_str());
+    return 100 - (int)((float)free / (float)num * 100);
 }
 
 void MainWindow::update_info() {
@@ -136,25 +167,6 @@ void MainWindow::update_info() {
     ui->total_memory_label->setText("Доступная оперативная память: " + get_available_memory());
     ui->busy_memory_lable->setText("Используемая оперативная память: " + get_busy_memory());
     ui->busy_memory_progressbar->setValue(get_memory_percentage());
-    //    int free = 0;
-    //    for (int i = 0; i < 3; i++) {
-    //        stream >> str;
-    //        stream >> str;
-    //        stream >> str;
-    //        free += atoi(str.c_str());
-    //    }
-    //    num -= free;
-    //    gb = num / 1024 / 1024;
-    //    mb = (num - gb*1024*1024) / 1024;
-    //    kb = (num - ((mb*1024) + (gb * 1024 * 1024)));
-    //    if (gb > 0)
-    //       e = QString::number(gb) + QString(" Gb ");
-    //    else
-    //       e = QString("");
-    //    if (mb > 0)
-    //       e += QString::number(mb) + QString(" Mb ");
-    //    if (kb > 0)
-    //       e += QString::number(kb) + QString(" Kb ");
 }
 
 void MainWindow::update_process_table() {
@@ -172,14 +184,9 @@ void MainWindow::update_process_table() {
             std::string s;
             getline(stream, s);
             int lastRow = ui->process_table_tablewidget->rowCount();
-            QString icon = "/usr/share/icons/hicolor/32x32/apps/" + QString::fromStdString(s) + ".png";
-            QFile file(icon);
             ui->process_table_tablewidget->insertRow(lastRow);
             ui->process_table_tablewidget->setColumnWidth(0, 150);
-
-            if(!file.exists())
-                icon = "binary.png";
-            ui->process_table_tablewidget->setItem(lastRow, 0, new QTableWidgetItem(QPixmap(icon), QString::fromStdString(s)));
+            ui->process_table_tablewidget->setItem(lastRow, 0, new QTableWidgetItem(QString::fromStdString(s)));
             ui->process_table_tablewidget->setItem(lastRow, 1, new QTableWidgetItem(str));
         }
     }
@@ -188,7 +195,7 @@ void MainWindow::update_process_table() {
 void MainWindow::kill_process() {
     QList <QTableWidgetItem *> list = ui->process_table_tablewidget->selectedItems();
     if (list.length() > 0) {
-        QTableWidgetItem *item = list.value(0);
+        QTableWidgetItem *item = list.value(1);
         QString str = item->text();
         QProcess::execute("kill", QStringList() << str);
         update();
