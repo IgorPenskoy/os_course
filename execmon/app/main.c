@@ -94,7 +94,7 @@ int main(int argc, char * argv[])
 		fclose(f);
 		ret = call_rv;
 		goto cleanup;
-	} 
+	}
 	f = fopen("exec_log.txt", "a");
 	fprintf(f, "Журнал мониторинга программ запущен.\n\n");
 	fclose(f);
