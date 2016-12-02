@@ -18,9 +18,9 @@ std::vector <float> read_cpu_stats() {
     return ret;
 }
 
-int get_cpu_load(double dt) {
+int get_cpu_load(int dt) {
     std::vector <float> stats1 = read_cpu_stats();
-    QProcess::execute("sleep",QStringList() << QString::number(dt));
+    std::this_thread::sleep_for(std::chrono::milliseconds(dt));
     std::vector <float> stats2 = read_cpu_stats();
     int size1 = stats1.size();
     int size2 = stats2.size();

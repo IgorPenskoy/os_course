@@ -143,7 +143,11 @@
        </attribute>
        <layout class="QGridLayout" name="gridLayout_4">
         <item row="0" column="0">
-         <widget class="QTextEdit" name="journal_content"/>
+         <widget class="QTextEdit" name="journal_content">
+          <property name="textInteractionFlags">
+           <set>Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
+          </property>
+         </widget>
         </item>
        </layout>
       </widget>

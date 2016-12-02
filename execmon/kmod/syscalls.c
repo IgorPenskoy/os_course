@@ -5,6 +5,8 @@
 #include <linux/kallsyms.h>
 #include <asm/unistd.h>
 #include <linux/vmalloc.h>
+#include <linux/timex.h>
+#include <linux/time.h>
 #include "includes/general.h"
 #include "includes/mem.h"
 #include "includes/syscalls.h"
@@ -34,28 +36,49 @@ cleanup:
 	return ret;
 }
 
+char *get_timestamp(void) {
+	struct timeval now;
+	struct tm format_time;
+	char *time_string = vmalloc(9);
+	do_gettimeofday(&now);
+	time_to_tm(now.tv_sec, 0, &format_time);
+	snprintf(time_string, 9, "%d:%d.%d", (format_time.tm_hour + 3) % 24, 
+			format_time.tm_min, format_time.tm_sec);
+	return time_string;
+}
+
 static asmlinkage long new_sys_execve(const char __user * filename,
 				const char __user * const __user * argv,
 				const char __user * const __user * envp) {
-	size_t exec_line_size;
+	size_t exec_line_size = 512;
 	char * exec_str = NULL;
 	char ** p_argv = (char **) argv;
+	char *time_string = NULL;
+	int my_uid = (int)current->cred->uid.val;
+	int my_pid = (int)current->pid;
+	char *time_flag = "ВРЕМЯ:";
+	char *uid_flag = "UID:";
+	char *pid_flag = "PID:";
+	char *file_path_flag = "ФАЙЛ:";
+	char *arguments_flag = "АРГУМЕНТЫ:";
+	char *uid_str = vmalloc(10);
+	char *pid_str = vmalloc(10);
+	snprintf(uid_str, 10, "%d", my_uid);
+	snprintf(pid_str, 10, "%d", my_pid);
 
-	exec_line_size = (strlen(filename) + 1);
-
-	/* Iterate through the execution arguments, to determine the final
-	size of the execution string. */
-	while (NULL != *p_argv) {
-		exec_line_size += (strlen(*p_argv) + 1);
-		(char **) p_argv++;	
-	}
-	
 	/* Allocate enough memory for the execution string */
+	time_string = get_timestamp();
 	exec_str = vmalloc(exec_line_size);
 	if (NULL != exec_str) {
-		snprintf(exec_str, exec_line_size, "%s", filename);
-
+		snprintf(exec_str, exec_line_size, "%s %s", time_flag, time_string);
+		snprintf(exec_str, exec_line_size, "%s %s %s", exec_str, uid_flag, uid_str);
+		snprintf(exec_str, exec_line_size, "%s %s %s", exec_str, pid_flag, pid_str);
+		snprintf(exec_str, exec_line_size, "%s %s %s", exec_str, file_path_flag, filename);
+		vfree(time_string);
+		vfree(uid_str);
+		vfree(pid_str);
 		/* Iterate through the execution arguments */
+		snprintf(exec_str, exec_line_size, "%s %s", exec_str, arguments_flag);
 		p_argv = (char **) argv;
 		while (NULL != *p_argv) {
 			/* Concatenate each argument with our execution line */

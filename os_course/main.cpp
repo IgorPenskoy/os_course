@@ -4,6 +4,8 @@
 
 int main(int argc, char *argv[])
 {
+    FILE *f = fopen("exec_log.txt", "w");
+    fclose(f);
     QApplication a(argc, argv);
     MainWindow w;
     w.show();

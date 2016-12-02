@@ -5,6 +5,7 @@
 #include <QTimer>
 #include <QProcess>
 #include <QDir>
+#include <QScrollBar>
 
 #include <iostream>
 #include <fstream>
@@ -12,6 +13,12 @@
 #include <unistd.h>
 #include <sys/sysinfo.h>
 #include <vector>
+#include <stdio.h>
+
+static const int info_update_gap = 1000;
+static const int process_table_update_gap = 4010;
+static const int journal_update_gap = 5020;
+static const int cpu_stats_gap = 300;
 
 namespace Ui {
 class MainWindow;

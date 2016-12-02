@@ -20,3 +20,5 @@ HEADERS  += mainwindow.h \
     update_functions.h
 
 FORMS    += mainwindow.ui
+
+QMAKE_CXXFLAGS += -std=c++11

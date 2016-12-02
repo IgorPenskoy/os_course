@@ -29,7 +29,7 @@ static void handle_exec_event(proto_msg_t * msg) {
 
 	}
 	FILE *f = fopen("exec_log.txt", "a");
-	fprintf(f, "Executed: %s\n", exec_line);
+	fprintf(f, "ЗАПУСК -- %s\n\n", exec_line);
 	fclose(f);
 	free(exec_line);
 }
@@ -77,7 +77,7 @@ int main(int argc, char * argv[])
 	UNUSED(argc);
 	UNUSED(argv);
 	FILE *f = fopen("exec_log.txt", "w");
-	fprintf(f, "[*] ExecMon\n");
+	fprintf(f, "Запуск мониторинга программ ...\n");
 	fclose(f);
 	/* Init communication struct */
 	call_rv = COMM_nl_init();
@@ -90,13 +90,13 @@ int main(int argc, char * argv[])
 	call_rv = COMM_nl_request_conn();
 	if (ERROR == call_rv) {
 		f = fopen("exec_log.txt", "a");
-		fprintf(f, "Error connecting to the kernel module.\n");
+		fprintf(f, "Ошибка во время установления соединения с модулем ядра.\n");
 		fclose(f);
 		ret = call_rv;
 		goto cleanup;
 	} 
 	f = fopen("exec_log.txt", "a");
-	fprintf(f, "[*] Monitoring executions\n");
+	fprintf(f, "Журнал мониторинга программ запущен.\n\n");
 	fclose(f);
 	monitor_execs();
 

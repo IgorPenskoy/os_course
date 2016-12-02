@@ -10,9 +10,11 @@
 #include <unistd.h>
 #include <QTest>
 #include <QProcess>
+#include <chrono>
+#include <thread>
 
 std::vector <float> read_cpu_stats();
-int get_cpu_load(double dt);
+int get_cpu_load(int dt);
 QString get_hostname();
 QString get_user_name();
 QString get_uptime();
