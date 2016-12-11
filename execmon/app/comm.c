@@ -47,11 +47,7 @@ int COMM_nl_send(void * send_msg, size_t len) {
 	memcpy(NLMSG_DATA(nlh), send_msg, len);
 
 	ret = sendmsg(g_comm_nl.nl_sock, &msg, 0);
-	if (0 >= ret) {
-		goto cleanup;
-	}
 
-cleanup:
 	if (NULL != nlh) {
 		free(nlh);
 	}
@@ -71,14 +67,17 @@ int COMM_nl_recv(void * recv_buff, size_t len) {
 	
 	ret = recvmsg(g_comm_nl.nl_sock, &msg, 0);
 	if (0 >= ret) {
-		goto cleanup;
+		if (NULL != nlh) {
+			free(nlh);
+		}
+
+		return ret;
 	}
 
 	/* Copy the netlink message data to the given buffer */
 	memcpy(recv_buff, NLMSG_DATA(nlh), nlh->nlmsg_len - NLMSG_HDRLEN);
 	//memset(NLMSG_DATA(nlh), 0, nlh->nlmsg_len - NLMSG_HDRLEN);
 	
-cleanup:
 	if (NULL != nlh) {
 		free(nlh);
 	}
@@ -102,24 +101,22 @@ int COMM_nl_request_conn(void) {
 	call_rv = COMM_nl_send(&request_msg, sizeof(proto_msg_t));
 	if (0 >= call_rv) {
 		ret = call_rv;
-		goto cleanup;	
+		return ret;	
 	}
 
 	call_rv = COMM_nl_recv(&ans_msg, sizeof(proto_msg_t));
 	if (0 >= call_rv) {
 		ret = ERROR;
-		goto cleanup;
+		return ret;
 	}
 
 	/* Validate the answer from the kernel */
 	if ((false == PROTO_is_valid_msg(&ans_msg))
 					|| ans_msg.action != CONN_ACCEPT) {
 		ret = ERROR;
-		goto cleanup;
+		return ret;
 	}
 
-
-cleanup:
 	return ret;	
 }
 
@@ -141,14 +138,14 @@ int COMM_nl_init() {
 	*nl_sock = socket(PF_NETLINK, SOCK_RAW, NETLINK_EXECMON);
 	if (0 > *nl_sock) {
 		ret = ERROR;
-		goto cleanup;
+		return ret;
 	}
 
 	call_rv = bind(*nl_sock, (struct sockaddr *) src_addr,
 						sizeof(struct sockaddr_nl)); 
 	if (SUCCESS != call_rv) {
 		ret = ERROR;
-		goto cleanup;
+		return ret;
 	}
 
 	/* Init the destination sockaddr */
@@ -157,7 +154,6 @@ int COMM_nl_init() {
 	dst_addr->nl_pid = 0;
 	dst_addr->nl_groups = 0;
 
-cleanup:
 	return ret;
 }
 
@@ -167,17 +163,16 @@ int COMM_nl_destruct() {
 	int * nl_sock = &(g_comm_nl.nl_sock);
 
 	if (-1 == *nl_sock) {
-		goto cleanup;
+		return ret;
 	}
 
 	/* Close the netlink socket */
 	call_rv = close(*nl_sock);
 	if (SUCCESS != call_rv) {
 		ret = ERROR;
-		goto cleanup;
+		return ret;
 	}
 
-cleanup:
 	return ret;
 }
 

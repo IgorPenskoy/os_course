@@ -34,7 +34,9 @@ int nl_send_to_user_by_pid(void * send_buff, size_t len, pid_t user_pid) {
 	/* Add a new netlink message to the skb */	
 	nlh = nlmsg_put(skb_out, 0, 0, NLMSG_DONE, len, 0);
 	if (NULL == nlh) {
-		goto nl_failure;
+		nlmsg_cancel(skb_out, nlh);	
+		kfree_skb(skb_out);
+		return ERROR;
 	}
 
 	NETLINK_CB(skb_out).dst_group = 0;
@@ -46,7 +48,6 @@ int nl_send_to_user_by_pid(void * send_buff, size_t len, pid_t user_pid) {
 	return nlmsg_unicast(g_comm_nl.nl_sock, 
 				skb_out, user_pid);	
 
-nl_failure:
 	nlmsg_cancel(skb_out, nlh);	
 	kfree_skb(skb_out);
 	return ERROR;
@@ -63,7 +64,12 @@ int COMM_nl_send_exec_msg(char * exec_str) {
 
 	if (NULL == exec_str) {
 		ret = ERROR;
-		goto cleanup;
+		if (NULL != exec_str) {
+			/* Free allocated memory */
+			vfree(exec_str);
+	}
+
+	return ret;
 	}
 
 	/* Init the protocol message */
@@ -74,18 +80,20 @@ int COMM_nl_send_exec_msg(char * exec_str) {
 	call_rv = nl_send_to_user(&exec_msg, sizeof(proto_msg_t));
 	if (0 > call_rv) {
 		ret = call_rv;
-		goto cleanup;
+		if (NULL != exec_str) {
+			/* Free allocated memory */
+			vfree(exec_str);
+	}
+
+	return ret;
 	}
 
 	/* Send packet's content */
 	call_rv = nl_send_to_user(exec_str, exec_msg.msg_size);
 	if (0 > call_rv) {
 		ret = call_rv;
-		goto cleanup;
 	}
 
-	
-cleanup:
 	if (NULL != exec_str) {
 		/* Free allocated memory */
 		vfree(exec_str);
@@ -192,10 +200,9 @@ int COMM_nl_init(void) {
 							&cfg);
 	if (NULL == g_comm_nl.nl_sock) {
 		ret = ERROR;
-		goto cleanup;
+		return ret;
 	}
 
-cleanup:
 	return ret;
 }
 

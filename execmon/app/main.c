@@ -83,7 +83,8 @@ int main(int argc, char * argv[])
 	call_rv = COMM_nl_init();
 	if (SUCCESS != call_rv) {
 		ret = ERROR;
-		goto cleanup;
+		COMM_nl_destruct();
+		return ret;
 	}
 
 	/* Connect to the kernel module */	
@@ -93,14 +94,14 @@ int main(int argc, char * argv[])
 		fprintf(f, "Ошибка во время установления соединения с модулем ядра.\n");
 		fclose(f);
 		ret = call_rv;
-		goto cleanup;
+		COMM_nl_destruct();
+		return ret;
 	}
 	f = fopen("exec_log.txt", "a");
 	fprintf(f, "Журнал мониторинга программ запущен.\n\n");
 	fclose(f);
 	monitor_execs();
 
-cleanup:
 	COMM_nl_destruct();
 	return ret;
 

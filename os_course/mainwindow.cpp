@@ -66,18 +66,23 @@ void MainWindow::kill_process() {
 }
 
 void MainWindow::update_journal() {
-    QScrollBar *sb = ui->journal_content->verticalScrollBar();
-    int val = sb->value();
-    int val_max = sb->maximum();
-    ui->journal_content->setText(QString::fromStdString(file_read("exec_log.txt")));
-    if (val == val_max) {
-        QTextCursor c = ui->journal_content->textCursor();
-        c.movePosition(QTextCursor::End);
-        ui->journal_content->setTextCursor(c);
-        sb->setValue(sb->maximum());
+    if (getuid() == 0) {
+        QScrollBar *sb = ui->journal_content->verticalScrollBar();
+        int val = sb->value();
+        int val_max = sb->maximum();
+        ui->journal_content->setText(QString::fromStdString(file_read("exec_log.txt")));
+        if (val == val_max) {
+            QTextCursor c = ui->journal_content->textCursor();
+            c.movePosition(QTextCursor::End);
+            ui->journal_content->setTextCursor(c);
+            sb->setValue(sb->maximum());
+        }
+        else
+            sb->setValue(val);
     }
-    else
-        sb->setValue(val);
+    else {
+        ui->journal_content->setText(QString("Для запуска журнала необходимо запустить монитор с правами суперпользователя."));
+    }
 }
 
 MainWindow::~MainWindow() {

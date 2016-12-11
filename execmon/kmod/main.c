@@ -26,7 +26,7 @@ static int mod_main(void)
 	if (SUCCESS != call_rv) {
 		KLOG_PRINT("Cannot set netlink socket, exiting...");
 		ret = call_rv;
-		goto cleanup;		
+		return ret;		
 	}
 
 	/* Set needed hooks */	
@@ -34,12 +34,11 @@ static int mod_main(void)
 	if (SUCCESS != call_rv) {
 		KLOG_PRINT("Cannot set hooks, exiting...");
 		ret = call_rv;
-		goto cleanup;
+		return ret;
 	}
 
 	KLOG_PRINT("kmod started successfully");
 
-cleanup:
 	return ret;
 }
 

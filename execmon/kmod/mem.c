@@ -11,7 +11,7 @@ int MEM_make_rw(unsigned long addr) {
 	pte = lookup_address(addr, &level);
 	if (NULL == pte) {
 		ret = ERROR;
-		goto cleanup;
+		return ret;
 	}
 
 	/* Add read & write permissions if needed */
@@ -19,7 +19,6 @@ int MEM_make_rw(unsigned long addr) {
 		pte->pte |= _PAGE_RW;
 	}
 
-cleanup:
 	return ret;
 }
 
@@ -64,7 +63,7 @@ int MEM_patch_relative_call(unsigned long mem_addr,
 	if (ERROR == call_insn_offset) {
 		DBG_PRINT("Error patching the relative call address");
 		ret = ERROR;
-		goto cleanup;
+		return ret;
 	}
 
 	/* Calculate the call instruction address */
@@ -85,7 +84,6 @@ int MEM_patch_relative_call(unsigned long mem_addr,
 	/* Patch */
 	(*((int*)(call_insn_addr + 1))) = (int) new_call_relative_val;
 
-cleanup:
 	return ret;
 }
 

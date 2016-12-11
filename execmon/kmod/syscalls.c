@@ -26,13 +26,12 @@ static int obtain_sys_call_table_addr(unsigned long * sys_call_table_addr) {
 	/* Return error if the symbol doesn't exist */
 	if (0 == sys_call_table_addr) {
 		ret = ERROR;
-		goto cleanup;
+		return ret;
 	}
 	
 	DBG_PRINT("Found sys_call_table: %p", (void *) temp_sys_call_table_addr);
 	*sys_call_table_addr = temp_sys_call_table_addr;
 		
-cleanup:
 	return ret;
 }
 
@@ -111,13 +110,12 @@ static int hook_sys_execve(unsigned long sys_call_table_addr) {
 					MAX_RELATIVE_CALL_OFFSET,
 					(unsigned long) new_sys_execve, &orig_call_addr);
 	if (SUCCESS != ret) {
-		goto cleanup;
+		return ret;
 	}
 
 	/* Backup the original sys_execve address */
 	orig_sys_execve_fn = (void * ) orig_call_addr;
 
-cleanup:
 	return ret;
 }
 
@@ -146,13 +144,12 @@ int SYSCALLS_set_hooks(void)
 	call_rv = obtain_sys_call_table_addr(&sys_call_table_addr);
 	if (SUCCESS != call_rv) {
 		ret = call_rv;
-		goto cleanup;
+		return ret;
 	}
 
 	/* Fix stub_execve to call our new execve function */
 	hook_sys_execve(sys_call_table_addr);
 
-cleanup:
 	return ret;
 }
 
@@ -168,15 +165,12 @@ int SYSCALLS_remove_hooks(void)
 	call_rv = obtain_sys_call_table_addr(&sys_call_table_addr);
 	if (SUCCESS != call_rv) {
 		ret = call_rv;
-		goto cleanup;
+		return ret;
 	}
 
 	/* Fix stub_execve to call the original execve function */
 	remove_hook_sys_execve(sys_call_table_addr);
 
-cleanup:
 	return ret;
-
-
 }
 

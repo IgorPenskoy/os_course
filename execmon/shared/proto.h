@@ -24,6 +24,3 @@ int PROTO_is_valid_msg(proto_msg_t * msg);
 void PROTO_assign_msg(proto_msg_t * msg, enum ACTION action);
 
 #endif /* __PROT_H__ */
-
-
-
