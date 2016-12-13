@@ -81,7 +81,7 @@ void MainWindow::update_journal() {
             sb->setValue(val);
     }
     else {
-        ui->journal_content->setText(QString("Для запуска журнала необходимо запустить монитор с правами суперпользователя."));
+        ui->journal_content->setText(QString("Для запуска журнала необходимо запустить приложение с правами суперпользователя."));
     }
 }
 
